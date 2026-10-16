@@ -2131,9 +2131,8 @@ int runAlpha( int W, int H, int perturb, bool quiet = false )
 		{
 			if( mix == 1.0f && out[ i + 3 ] != 1.0f )
 				++wrong;
-			//Mix and alpha read the host's texture through its own filter, at the
-			//pixel's centre: exact but for the interpolated coordinate.
-			if( mix == 0.0f && ( std::fabs( out[ i ] - in[ i ] ) > 1e-5 || std::fabs( out[ i + 3 ] - in[ i + 3 ] ) > 1e-5 ) )
+			//Mix 0 is the host's own texel, read with texelFetch: bit for bit.
+			if( mix == 0.0f && ( out[ i ] != in[ i ] || out[ i + 3 ] != in[ i + 3 ] ) )
 				++wrong;
 		}
 		failures += report( wrong == 0, quiet, mix == 1.0f ? "Mix 1: alpha 1 everywhere (%d pixels not)" : "Mix 0: the host's picture and alpha back exactly (%d pixels not)", wrong );

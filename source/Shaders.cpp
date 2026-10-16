@@ -61,7 +61,6 @@ const char* const kOutputBody = R"(
 uniform sampler2DArray Ring;
 uniform ivec2 RingSize;
 uniform sampler2D Source;      //the live input, for Mix and alpha
-uniform vec2 MaxUV;
 uniform sampler2D PrintData;
 uniform vec2 OutSize;
 
@@ -420,7 +419,12 @@ void main()
 		return;
 	}
 
-	vec4 src = texture( Source, uv * MaxUV );
+	//The host's own texel, nearest, at the picture's raster: at Mix 0 the host's
+	//picture comes back bit for bit, on any rasteriser. A filtered read at an
+	//interpolated coordinate is exact on this Mac's GPU and not on Apple's
+	//software renderer, which blends the neighbour in at an edge.
+	ivec2 own = clamp( ivec2( floor( pix * vec2( RingSize ) / OutSize ) ), ivec2( 0 ), RingSize - 1 );
+	vec4 src = texelFetch( Source, own, 0 );
 	fragColor = vec4( mix( src.rgb, encodeSrgb( lin ), MixAmount ), mix( src.a, 1.0, MixAmount ) );
 }
 )";

@@ -117,7 +117,7 @@ constexpr double kAmplitudeSlew = 0.25;
 /// The camera's shutter is open for part of each frame; the hand's speed
 /// while it is open varies frame to frame about the turn's average. Each
 /// frame's exposure carries a lognormal factor of sigma this x the deviation.
-constexpr double kExposureJitter = 0.35;
+constexpr double kExposureJitter = 0.15;
 
 /// The timing error's amplitude, in frames, for a peak speed deviation.
 double Amplitude( const Partial* partials, int count, double deviation );

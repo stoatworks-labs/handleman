@@ -72,10 +72,13 @@ Handleman::Handleman()
 	params[ PT_CRANK ]          = controls::CrankParam( 16.0 );
 	params[ PT_CAMERA_HAND ]    = 0.3f;
 	params[ PT_PROJECTOR_HAND ] = 0.3f;
-	// 3 blades at 270 degrees: at 16 fps that is 48 Hz against a 60 Hz
-	// display, gate's photosensitivity default (AGENTS.md "Decisions").
+	// 3 blades at 315 degrees, the gentlest shutter there is: at 16 fps a
+	// display frame is a quarter of a projector frame, so a narrower opening
+	// beats against 60 Hz in steps of up to 38% of the light from one display
+	// frame to the next once the projector's hand moves the beat about
+	// (AGENTS.md "Decisions", the flicker survey).
 	params[ PT_BLADES ]  = 2.0f;//3
-	params[ PT_SHUTTER ] = controls::ShutterParam( 270.0 );
+	params[ PT_SHUTTER ] = controls::ShutterParam( 315.0 );
 
 	params[ PT_STOCK ]    = 0.0f;//Orthochromatic
 	params[ PT_TONE ]     = static_cast< float >( model::kSepia );
@@ -591,13 +594,11 @@ FFResult Handleman::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 		double toning[ 3 ], tint[ 3 ];
 		ToneLaw( tone, perturb, toning, tint );
 		const spectral::Weights& basis = spectral::kWeights[ std::clamp( stock, 0, spectral::kStockCount - 1 ) ];
-		const FFGLTexCoords maxCoords  = GetMaxGLTexCoords( input );
 
 		outputShader.Set( "Ring", 0 );
 		outputShader.Set( "Source", 1 );
 		outputShader.Set( "PrintData", 2 );
 		glUniform2i( outputShader.FindUniform( "RingSize" ), ring.Width(), ring.Height() );
-		outputShader.Set( "MaxUV", maxCoords.s, maxCoords.t );
 		outputShader.Set( "OutSize", static_cast< float >( outWidth ), static_cast< float >( outHeight ) );
 		outputShader.Set( "SegCount", count );
 		glUniform1fv( outputShader.FindUniform( "SegWeight" ), count, weights );
