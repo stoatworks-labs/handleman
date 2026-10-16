@@ -222,9 +222,10 @@ up to about 400 MB at 4K.
 ### In Resolume Arena, on Windows
 
 In **Resolume Arena 7.27.1 on Windows** (win-lab: Mesa llvmpipe, software rendering, no GPU,
-no sound device) the x64 build, compiled by MSVC 19.44 without a warning, loads, registers as
-`SW Handleman` (`HM01`, an effect) and renders, and passed all 9 of the fleet's Arena checks
-that can run there, twice. All 25 controls (Arena's Opacity, the plugin's 19 and the About
+no sound device) the x64 build loads, registers as `SW Handleman` (`HM01`, an effect) and
+renders, and passed all 9 of the fleet's Arena checks that can run there, three times: twice on
+a build compiled on win-lab by MSVC 19.44 without a warning, and once on the shipped v0.1.0
+`handleman-windows-x86_64.zip` itself. All 25 controls (Arena's Opacity, the plugin's 19 and the About
 block's 5) match their declarations, the two names at FFGL's 16-character limit arrive whole,
 and Arena's log stays clean.
 
@@ -235,8 +236,10 @@ flicker. So in the first run, at the defaults, 8 controls measurably changed the
 while every other control was measured, 12 did: Camera Hand, Grain, Dust and Scratches
 joined Opacity, Stock, Tone, Contrast, Weave, Framing, Vignette and Mix. Crank Rate, Blades,
 Shutter Angle and Projector Hand, which change how the light varies over time rather than
-what's in the picture, and Hair, a rare event, were too close to call both times. None read
-dead. Run Out Time and Tail only act after a Run Out press, which the gate never sends.
+what's in the picture, and Hair, a rare event, were too close to call in both. The third run,
+on the shipped zip with the second's expectation, found 15: Blades, Shutter Angle and
+Projector Hand moved the picture there, and only Crank Rate and Hair were too close to call.
+A verdict on a picture that moves by itself changes from run to run. None read dead. Run Out Time and Tail only act after a Run Out press, which the gate never sends.
 Software rendering says nothing about a GPU or about speed. The expectation is
 plugin-bench's `arena/expect/handleman.json`.
 

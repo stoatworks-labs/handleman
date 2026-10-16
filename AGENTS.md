@@ -445,7 +445,9 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
   `arena/expect/handleman.json`), 12 live and 5 inconclusive: Crank Rate, Blades, Shutter
   Angle and Projector Hand (they change the light over time, which Arena's slow software
   frames average away) and Hair (a rare event). None dead. Run Out Time and Tail are `inert`
-  there: the gate never presses Run Out.
+  there: the gate never presses Run Out. Run 3 gated the SHIPPED v0.1.0 zip (the release
+  workflow's MSVC build) with the same expectation: 9 of 9, 15 live, only Crank Rate and Hair
+  inconclusive.
 - **The hands are chosen.** The partials, their shares and periods, the jerk, the slip, the
   fog's curve and reach, the grain and the tones are numbers picked to look and behave
   right, not measured from a cameraman, a projector or a print. The published figures are

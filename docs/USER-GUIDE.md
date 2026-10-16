@@ -21,7 +21,7 @@ orthochromatic stock, sepia toned and cranked at sixteen frames a second.*
 
 > **Before you rely on this:** it's at **v0.1.0**, the first release, and very early days. On
 > macOS it has **never been loaded into Resolume**. In Resolume Arena 7.27.1 on Windows
-> (software rendering, no GPU, no sound) it loads, registers and renders, with every control as declared, and passed all 9 of the fleet's Arena checks twice. With the grain, the wear and the hands held still, 12 controls measurably changed the picture there and none read dead. Crank Rate, Blades, Shutter Angle and Projector Hand, which change how the light varies over time, and Hair, a rare event, were too close to call, and Run Out Time and Tail only act after a press of Run Out, which the gate never sends. What's here was compiled, rendered and
+> (software rendering, no GPU, no sound) it loads, registers and renders, with every control as declared, and passed all 9 of the fleet's Arena checks three times, the last on the shipped download itself. With the grain, the wear and the hands held still, 12 and then 15 controls measurably changed the picture there and none read dead. Crank Rate and Hair (a rare event) were too close to call every time, and Run Out Time and Tail only act after a press of Run Out, which the gate never sends. What's here was compiled, rendered and
 > measured offline on an Apple Silicon Mac (an M4 Max, macOS 26.4), by a harness that drives the
 > plugin's own class in a headless GL context, at two rasters (1280×720 and 320×180) and again on
 > Apple's software renderer. Most of its checks feed the plugin a picture that says which frame it
