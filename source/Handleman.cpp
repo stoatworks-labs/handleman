@@ -432,10 +432,19 @@ FFResult Handleman::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	// frame's passes. A raster change or a deeper ring COPIES the ring: the
 	// loop of film is still to be projected.
 	//---------------------------------------------------------------------
-	const int wantDepth = std::max( { ring.Depth(), captureLayer + 1, 1 } );
+	//Deeper only when a capture needs a layer the ring has not got, and then
+	//with two to spare, so a hand drifting out does not reallocate frame by
+	//frame. Ensure() is a no-op at the same raster and a depth it already has.
+	const int oldDepth = ring.Depth();
+	int wantDepth      = std::max( captureLayer + 1, 1 );
+	if( wantDepth > oldDepth )
+		wantDepth = std::min( wantDepth + 2, kMaxRing );
 	if( ring.IsValid() && ( ring.Width() != width || ring.Height() != height ) && ( perturb & kPerturbResizeClears ) )
+	{
 		ring.Destroy();//the negative control: the photofinish bug, on purpose
-	if( !ring.Ensure( width, height, std::min( wantDepth + 2, kMaxRing ), resampleShader, quad, true ) )
+		wantDepth = std::max( wantDepth, oldDepth );
+	}
+	if( !ring.Ensure( width, height, wantDepth, resampleShader, quad, true ) )
 	{
 		diag::error( "could not allocate the film ring at " + std::to_string( width ) + "x" + std::to_string( height ) );
 		return FF_FAIL;
@@ -753,6 +762,11 @@ std::vector< std::pair< int64_t, double > > Handleman::ExposedForTest() const
 	for( const Exposed& e : exposed )
 		out.emplace_back( e.frame, e.exposure );
 	return out;
+}
+
+int Handleman::RingDepthForTest() const
+{
+	return ring.Depth();
 }
 
 size_t Handleman::StateBytesForTest() const

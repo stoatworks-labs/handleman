@@ -168,12 +168,13 @@ shared GPU):
 
 | | ms/frame | % of a 60 fps frame | state held |
 | --- | --- | --- | --- |
-| 1280×720 | BENCH720 | | |
-| 1920×1080 | BENCH1080 | | |
-| 3840×2160 | BENCH4K | | |
+| 1280×720 | 0.050 | 0.3% | 21 MB |
+| 1920×1080 | 0.066 | 0.4% | 47 MB |
+| 3840×2160 | 0.175 | 1.0% | 190 MB |
 
 The state is the loop of film: a stack of 8-bit pictures at the input's size, as deep as
-the hands have needed.
+the hands have needed. That's six at the defaults and twelve with both hands at full, so
+up to about 400 MB at 4K.
 
 ### Not established
 

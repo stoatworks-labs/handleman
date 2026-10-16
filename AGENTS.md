@@ -168,6 +168,15 @@ does a little, so the tolerance is five standard errors of the regression plus 5
 gamma. Measured slope: 1.440 at both rasters against 1.40 (1.394 to 1.421 with the first,
 larger jitter).
 
+### ☠️ "As deep as it needs, plus two" asked every frame is "two more every frame"
+
+The ring was asked for `max( depth, needed ) + 2` layers on every frame, and `Ensure()`
+reallocates (copying every layer) whenever it is asked for more than it has. So it grew by
+two layers a frame until it hit the cap of 32: 112 MB at 720p and a gigabyte at 4K, where
+the defaults need six layers. Nothing in the picture showed it; `verify.sh`'s bench line
+did. It now asks for more only when a capture has no free layer, and `--crank` checks the
+deepest the ring got against the loop's bound (12 against 15 with both hands at full).
+
 ### ☠️ A filtered read is exact on one renderer and not another
 
 The output pass first read the host's picture for Mix and alpha with `texture( Source,
@@ -209,7 +218,7 @@ One line per check. Every tolerance is derived, not fitted; every check ran at 3
 | `--crank` still | which display frame's picture each display frame shows, against the steady clock and the stated shutter | exact (a picture is a 14-bit number read from black and white blocks; a block within 3% of its references) | none: the band is at least 4 rows and each block W/16 wide, read at its centre half; no fractional geometry |
 | `--crank` projector hand | the pictures are the steady camera's; holds and waits within the hand's bounds | holds `[⌊60/f(1+s)⌋ − 2, ⌈60/f(1−s)⌉ + 2]` display frames (a speed within 1 ± s, two display frames for a dark one and a lit pull-down); waits `[0, 2 A_p 60/f/(1−s) + 4]` | none |
 | `--crank` camera hand | every switch where the steady projector, `A_c` behind, puts it; a newer picture at every pull-down; the scene's rate over a turn | rate within `1 ± s` ± two display frames over the turn | none |
-| `--crank` both | pictures counted over 29 s against the crank | `2 (A_c + A_p) + 3` frames: the loop's swing and a frame each end | none |
+| `--crank` both | pictures counted over 29 s against the crank; the ring's deepest | `2 (A_c + A_p) + 3` frames: the loop's swing and a frame each end; depth `⌈2 (A_c + A_p)⌉ + 7` (two above the gate, two straddled, one exposing, two of growth) | none |
 | `--exposure` | the regression slope of log light on log camera interval | five standard errors (from the residuals) + 5% of gamma | none: one pixel of a flat grey; 240 Hz for the intervals |
 | `--flicker` | gate's: every DFT bin against the shutter's Fourier series | `2 × 8 kU × max y` + the series' tail | none |
 | `--tone` neutral | R = G = B on every grey patch | exactly 0 (the same float operations per channel) | none |
@@ -363,7 +372,8 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
   to 8 display frames; waits 1 to 10, within the loop's 19.9. The camera's hand alone
   (50%): 1140 of 1140 display frames switch where the steady projector 2.64 frames behind
   puts them; every one of 304 pull-downs brings a newer picture; over a turn the scene runs
-  at 0.77 to 1.37 of real time. Both: 466 pictures in 29.0 s against the crank's 463.7.
+  at 0.77 to 1.37 of real time. Both: 466 pictures in 29.0 s against the crank's 463.7,
+  and the ring never deeper than 12 layers (bound 15).
 - **Exposure.** Log light on log camera interval: slope 1.440 at 320x180 and 1280x720
   against gamma 1.40 (±0.289).
 - **Flicker.** gate's numbers, at Handleman's rates: 24 fps × 2 blades 0.29271 at 12 Hz;
@@ -394,6 +404,9 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
 - **`--pipe`**: two frames for two and a half, exit 2 on an unknown cue, exit 1 on a closed
   stdout and on a failed render, an option steps, an event fires on its frame, a slider
   ramps.
+- **Render cost** (`hmtest --bench`, the defaults, best of three, `glFinish` both sides, a
+  shared GPU): 0.050 / 0.066 / 0.175 ms at 720p / 1080p / 4K (0.3 / 0.4 / 1.0% of a 60 fps
+  frame), holding 21 / 47 / 190 MB (a six-layer ring; twelve layers with both hands at full).
 - **The bundle** is universal, exports `_plugMain`, carries `com.stoatworks.ffgl.handleman`,
   ad-hoc signs, and `oxbow` reports `SW Handleman` / `HM01` / `effect` and renders 120
   frames through `plugMain`.

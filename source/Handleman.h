@@ -72,6 +72,9 @@ public:
 	/// The camera's frames still in the ring: ( frame, exposure ).
 	std::vector< std::pair< int64_t, double > > ExposedForTest() const;
 
+	/// Layers in the film ring.
+	int RingDepthForTest() const;
+
 	/// Bytes of GPU state held across frames.
 	size_t StateBytesForTest() const;
 

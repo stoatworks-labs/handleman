@@ -776,6 +776,7 @@ struct Frame
 	Decoded band;
 	double grey   = 0.0;///< the probe at the picture's centre, below the band
 	double weight = 0.0;///< the segments' summed weight (the plugin's)
+	int depth     = 0;  ///< the film ring's layers
 };
 
 bool runCoded( const Knobs& k, int W, int H, int perturb, long N, double displayFps, double lead, double level, std::vector< Frame >& out )
@@ -803,6 +804,7 @@ bool runCoded( const Knobs& k, int W, int H, int perturb, long N, double display
 		s.readPixel( W / 2, ( H + bandRows( H ) ) / 2, px );
 		f.grey   = px[ 1 ];
 		f.weight = s.plugin.LastWeightSumForTest();
+		f.depth  = s.plugin.RingDepthForTest();
 		if( std::getenv( "HMTEST_DEBUG" ) )
 		{
 			const auto ex = s.plugin.ExposedForTest();
@@ -1068,6 +1070,15 @@ int runCrank( int W, int H, int perturb, bool quiet = false )
 		const double bound    = 2.0 * ( Ac + Ap ) + 3.0;
 		failures += report( std::fabs( static_cast< double >( seen.size() ) - expected ) <= bound, quiet,
 		                    "both hands: %zu pictures in %.1f s, the crank's %.1f (+- %.1f, the loop's swing)", seen.size(), ( lastM - firstM ) / 60.0, expected, bound );
+		//The ring holds the loop: from two above the oldest frame in the gate
+		//to the camera's newest, 2 ( A_c + A_p ) apart at most, plus the two
+		//frames a display frame can straddle, the one being exposed, and the
+		//two the ring grows by at a time.
+		int deepest = 0;
+		for( const Frame& f : frames )
+			deepest = std::max( deepest, f.depth );
+		const int depthBound = static_cast< int >( std::ceil( 2.0 * ( Ac + Ap ) ) ) + 2 + 2 + 1 + 2;
+		failures += report( deepest <= depthBound, quiet, "both hands: the film ring is %d layers deep at most (the loop's bound %d)", deepest, depthBound );
 	}
 	return failures;
 }
