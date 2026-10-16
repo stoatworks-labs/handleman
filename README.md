@@ -10,8 +10,9 @@
 > ten-millionth; the orthochromatic stock's weights read back out of the picture to four
 > places; and Run Out ends in blank cells with a frame line of the published height,
 > crawling up a pull-down at a time. Ten negative controls and a one-character mutant prove
-> the checks can fail. It has **never been loaded into Resolume**, on either platform. The
-> full rundown is under [Status](#status).
+> the checks can fail. It has **never been loaded into Resolume on macOS**; on Windows it
+> loads and renders in Resolume Arena and passed the fleet's Arena checks. The full rundown
+> is under [Status](#status).
 
 A hand-cranked camera and projector, for your clip. Sepia or black and white, a frame rate
 that won't sit still, the usual wear and tear on the print, and a button that runs the reel
@@ -22,6 +23,10 @@ out. An FFGL effect for [Resolume](https://resolume.com) Arena and Avenue.
 <sub>One frame, rendered by `hmtest --pipe`, the offline harness, not captured from
 Resolume. Resolume's bundled demo clip NoHopeJustFear_44 at the defaults, with Hair turned
 up: orthochromatic stock, sepia toned, cranked at sixteen frames a second.</sub>
+
+<!-- downloads:start -->
+
+<!-- downloads:end -->
 
 ## The one idea
 
@@ -48,10 +53,11 @@ it does.
 
 - **Motion speeds up and slows down.** Each frame holds the instant the camera's crank
   passed it. When the cameraman hurried, the frames are closer together in the scene's
-  time, and played back steadily the action rushes; when he slowed, it drags.
+  time, so played back steadily the action drags; when he slowed, they're further apart
+  and it rushes.
 - **The picture breathes in step.** The camera's shutter is a fixed angle, so a frame
   cranked slowly was exposed for longer and prints lighter, and a hurried one darker. The
-  breathing and the speed-up go together, as they do on real silent footage.
+  action rushes as the picture brightens, as it does on real silent footage.
 - **The frame rate wobbles.** The projector's hand holds some frames longer than others,
   and the shutter's flicker against your display's 60 Hz wanders with it.
 - **Orthochromatic film is blind to red.** Lips and skin go dark, skies go white: red
@@ -123,7 +129,7 @@ part of the clip prints as black film.
 
 ## Status
 
-**v0.1.0, 16 October 2026: measured offline on macOS, and never loaded into Resolume.**
+**v0.1.0, 16 October 2026: measured offline on macOS, and gated in Resolume Arena on Windows.**
 
 ### Measured offline, on macOS
 
@@ -176,11 +182,33 @@ The state is the loop of film: a stack of 8-bit pictures at the input's size, as
 the hands have needed. That's six at the defaults and twelve with both hands at full, so
 up to about 400 MB at 4K.
 
+### In Resolume Arena, on Windows
+
+In **Resolume Arena 7.27.1 on Windows** (win-lab: Mesa llvmpipe, software rendering, no GPU,
+no sound device) the x64 build, compiled by MSVC 19.44 without a warning, loads, registers as
+`SW Handleman` (`HM01`, an effect) and renders, and passed all 9 of the fleet's Arena checks
+that can run there, twice. All 25 controls (Arena's Opacity, the plugin's 19 and the About
+block's 5) match their declarations, the two names at FFGL's 16-character limit arrive whole,
+and Arena's log stays clean.
+
+The gate measures each control against a still picture, and Handleman never stands still on
+its own: new grain at every pull-down, the weave, dust, scratches coming and going, the
+flicker. So in the first run, at the defaults, 8 controls measurably changed the picture and
+9 were too close to call. In the second, with the grain, the wear and both hands held at 0
+while every other control was measured, 12 did: Camera Hand, Grain, Dust and Scratches
+joined Opacity, Stock, Tone, Contrast, Weave, Framing, Vignette and Mix. Crank Rate, Blades,
+Shutter Angle and Projector Hand, which change how the light varies over time rather than
+what's in the picture, and Hair, a rare event, were too close to call both times. None read
+dead. Run Out Time and Tail only act after a Run Out press, which the gate never sends.
+Software rendering says nothing about a GPU or about speed. The expectation is
+plugin-bench's `arena/expect/handleman.json`.
+
 ### Not established
 
-It's **never been loaded into Resolume**, and never built for Windows. Everything above was
+On macOS it's **never been loaded into Resolume**: everything above the Windows section was
 compiled, rendered and measured offline against the plugin's own class in a headless CGL
-context, plus an `oxbow` load.
+context, plus an `oxbow` load. Nobody has looked at its panel in Resolume on a Mac, or run
+it on a GPU inside Resolume.
 
 The published figures are the eight frames a turn and the film's apertures and pitch. The
 rest (how the hands wander, the jerk, the slip, the fog, the grain, the tones' colours) are
@@ -189,7 +217,7 @@ orthochromatic sensitivity is an assumed shape, not a digitised curve. I've only
 Resolume's bundled demo clips. A 16-bit composition is quantised to 8 bits in the loop.
 AGENTS.md lists every approximation and open question.
 
-No user guide, OpenFX port, browser demo or presets yet.
+There's a [user guide](docs/USER-GUIDE.md). No OpenFX port, browser demo or presets yet.
 
 ## Build
 

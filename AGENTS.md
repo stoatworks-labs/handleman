@@ -189,8 +189,32 @@ the host's viewport differs from the picture), so Mix 0 is bit for bit everywher
 
 ### The worktree guard judges by the session's directory
 
-`git -C /Users/allansargeant/dev/handleman` always; a bare `git` after a `cd` is judged by
-wherever the session started.
+Since v0.1.0 the shared checkout is `~/Projects/resolume/handleman`, so work in a worktree
+and use `git -C <literal absolute path>` always: a bare `git` after a `cd`, or a `$VAR`
+path, is judged by wherever the session started.
+
+### ☠️ Hurrying the camera makes the action drag, not rush
+
+The README shipped to v0.1.0's release worktree saying the opposite, and the site entry and
+the release notes copied it before the guide's author caught it on a render. A hurried
+crank exposes frames closer together in the scene's time, so played back at a steady rate
+the action is slowed (overcranking is slow motion); a slow crank spaces them out and the
+action rushes, and those frames were exposed for longer, so **rushing and brightening go
+together**. Check any new prose about the camera hand against that sentence.
+
+### Release traps (v0.1.0, 2026-10-16)
+
+- **The auto-mode classifier refused `gh workflow run release.yml --ref <branch>`** (a
+  pre-tag Windows build) as a CI bypass, and Allan chose the by-hand route. The DLL was built
+  on win-lab: tar the worktree (`--exclude ./build* ./.git`, COPYFILE_DISABLE=1, the FFGL
+  submodule included), scp to `C:\build\hm-rel.tgz`, a `.cmd` that extracts with Windows'
+  `tar`, calls `vcvars64.bat` and runs the CI's configure line, started by WMI
+  (`Invoke-CimMethod Win32_Process Create`) and polled for its `JOB-DONE` marker. About 9
+  minutes, most of it vcpkg's first GLEW install.
+- **gate's `Diag.cpp` reads `FILAMENT_LOG_DIR`**; Handleman's read it too until v0.1.0
+  (now `HANDLEMAN_LOG_DIR`). Grep a forked plugin for its parent's names before release.
+- **The README's attributions block and `ATTRIBUTIONS.md` are generated** since
+  registration; the derived entry is `attributions/derived.json` in stoatworks-backend.
 
 ### Inherited from the fleet, and all still true here
 
@@ -413,7 +437,15 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
 
 ### Assumed, or not done
 
-- ☠️ **Never loaded into Resolume**, on either platform. Never built for Windows.
+- ☠️ **Never loaded into Resolume on macOS.** On Windows: built by MSVC 19.44 on win-lab
+  with no warnings, and gated in Arena 7.27.1 (Mesa llvmpipe) twice, 9 of 9 checks both times.
+  At the defaults 8 controls read live and 9 inconclusive (the projection moves by itself on
+  the gate's still carrier, floor 11 levels); with Camera Hand, Projector Hand, Grain, Weave,
+  Scratches, Dust and Hair held at 0 in every row but their own (plugin-bench's committed
+  `arena/expect/handleman.json`), 12 live and 5 inconclusive: Crank Rate, Blades, Shutter
+  Angle and Projector Hand (they change the light over time, which Arena's slow software
+  frames average away) and Hair (a rare event). None dead. Run Out Time and Tail are `inert`
+  there: the gate never presses Run Out.
 - **The hands are chosen.** The partials, their shares and periods, the jerk, the slip, the
   fog's curve and reach, the grain and the tones are numbers picked to look and behave
   right, not measured from a cameraman, a projector or a print. The published figures are
@@ -423,13 +455,19 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
 - **Seen on Resolume's bundled demo clips** through `--pipe`; never on camera footage.
 - **A 16-bit composition** is quantised to 8 bits in the ring.
 - **Not verified at 4K**, only benchmarked there.
-- **No OpenFX port, browser demo, presets or user guide.**
+- **The picture beyond the aperture is invented.** The camera exposed 2.2% more at each
+  end than the projector shows; the clip has no such rows, so it is the clip's edge row
+  repeated, which shows as streaks either side of the frame line when Framing is off the
+  middle (the guide's `wear.png` shows it).
+- **No OpenFX port, browser demo or presets.** The user guide exists since v0.1.0.
 
 ---
 
 ## Open questions
 
-- **The first second.** The loop is threaded with the first picture. Should a fresh
+- **The first picture.** The loop is threaded with the first picture: it holds 8 display
+  frames at the defaults and 27 with both hands at full (against a normal hold of about 4),
+  measured for the guide; "the first second" overstated it. Should a fresh
   instance thread with blank leader instead, so it opens like a reel?
 - **Travel ghost.** The pull-down is instantaneous and always in the dark (gate's shutter
   range, 45–315°). A narrow blade over a slow pull-down smears the picture vertically; a
