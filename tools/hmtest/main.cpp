@@ -1667,9 +1667,14 @@ int runScratch( int W, int H, int perturb, bool quiet = false )
 	if( !run( false, clean, w0 ) || !run( true, cut, w1 ) )
 		return 1;
 
+	//The untouched columns are compared to the same relative tolerance as the
+	//scratched ones, not bit for bit: two runs of a CI runner's software
+	//renderer differed in 1 and 3 samples of 12160 there, while this Mac's
+	//renderers repeat exactly. A scratch in the wrong place moves a column by
+	//far more than this.
 	const int b0 = 5 * W / 16, b1 = b0 + W / 64, e0 = 9 * W / 16, e1 = e0 + W / 64;
 	int baseWrong = 0, emulsionWrong = 0, untouchedWrong = 0;
-	double worst  = 0.0;
+	double worst  = 0.0, worstUntouched = 0.0;
 	for( int m = 2; m < frames; ++m )
 		for( int x = 0; x < W; ++x )
 		{
@@ -1689,12 +1694,17 @@ int runScratch( int W, int H, int perturb, bool quiet = false )
 				if( std::fabs( r - 1.0 ) > 32.0 * 2.0 * kU )
 					++emulsionWrong;
 			}
-			else if( a != b )
-				++untouchedWrong;
+			else
+			{
+				const double r = std::fabs( b - a ) / std::max( std::fabs( a ), 1e-3 );
+				worstUntouched = std::max( worstUntouched, r );
+				if( r > 32.0 * 2.0 * kU )
+					++untouchedWrong;
+			}
 		}
 	failures += report( baseWrong == 0, quiet, "base side: columns %d-%d lose exactly half the light on %d frames of a moving, weaving picture (%d samples off)", b0, b1 - 1, frames - 2, baseWrong );
 	failures += report( emulsionWrong == 0, quiet, "emulsion side: columns %d-%d are clear base on every frame (%d samples off; worst of both %.1e)", e0, e1 - 1, emulsionWrong, worst );
-	failures += report( untouchedWrong == 0, quiet, "every other column is untouched (%d samples changed)", untouchedWrong );
+	failures += report( untouchedWrong == 0, quiet, "every other column is untouched (%d samples changed; worst %.1e)", untouchedWrong, worstUntouched );
 	return failures;
 }
 
