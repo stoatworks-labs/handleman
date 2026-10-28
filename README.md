@@ -257,7 +257,24 @@ orthochromatic sensitivity is an assumed shape, not a digitised curve. I've only
 Resolume's bundled demo clips. A 16-bit composition is quantised to 8 bits in the loop.
 AGENTS.md lists every approximation and open question.
 
-There's a [user guide](docs/USER-GUIDE.md). No OpenFX port, browser demo or presets yet.
+There's a [user guide](docs/USER-GUIDE.md) and a [browser demo](#browser-demo). No OpenFX port
+or presets yet.
+
+## Browser demo
+
+[handleman-demo.stoatworks-labs.com](https://handleman-demo.stoatworks-labs.com/) runs the
+plugin's own capture, resample and output shaders in WebGL2, spliced in from
+`source/Shaders.cpp` by `demo/tools/sync_shaders.py` and checked character for character, with
+Model.h's constants and Spectral.h's weights, by `demo/tools/check_shaders.py` from
+`tools/verify.sh`. So the loop of film, the strip and its frame line, the stocks, the curve, the
+tones, the grain and the wear run on your GPU as they do in Resolume. The CPU half (the two hands
+and the loop between them, the shutter's light per projector frame, the weave, every scratch,
+speck and hair, the run-out and its tails, and every control's law) is ported to JavaScript by
+hand, and the page says so. Driven frame by frame against `hmtest --pipe --fps 60` on the same
+input (`demo/tools/crosscheck/crosscheck.mjs`), it agrees to within 1/255 on every channel of
+every frame, run-outs and all. The flicker beats against your browser's own frame rate, so what it
+shows depends on your display, and the page has a photosensitivity note of its own.
+Generated clips only, or your own image or video, which never leaves the page.
 
 ## Build
 

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Handleman — browser demo | Stoatworks Labs</title>
+    <meta name="description" content="Try the Handleman FFGL plugin for Resolume in your browser: a hand-cranked camera and projector for your clip. Sepia or black and white, a frame rate that won't sit still, wear on the print, and a button that runs the reel out. The plugin's own capture, resample and output shaders ported to WebGL2, so the loop of film, the stock, the curve, the tones and the marks run on your GPU; the two hands, the shutter's light per projector frame, the weave, the print's marks and the run-out are a hand port to JavaScript. The flicker beats against your display's own rate." />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./vendor/kit.css" />
+    <link rel="canonical" href="https://handleman-demo.stoatworks-labs.com/" />
+  </head>
+  <body>
+    <main id="demo">
+      <noscript>
+        <p>
+          This demo runs the plugin's shaders and a port of its CPU half in your
+          browser, so it needs JavaScript and WebGL2. The plugin itself, its
+          source and its downloads are on
+          <a href="https://github.com/stoatworks-labs/handleman">its repository</a>.
+        </p>
+      </noscript>
+    </main>
+
+    <script type="module" src="./plugin.js"></script>
+    <script
+      src="./vendor/support-footer.js"
+      defer
+      data-app="Handleman"
+      data-repo="https://github.com/stoatworks-labs/handleman"
+      data-note="A browser demo of the plugin's shaders and a port of its two hands, its projector, its print and its controls. Nothing you load here leaves your machine."
+    ></script>
+  </body>
+</html>

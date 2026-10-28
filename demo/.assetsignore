@@ -1,0 +1,7 @@
+# Not part of the page. tools/ holds sync_shaders.py and check_shaders.py, the
+# repo-side splice and check that the demo's shader copies and constants still
+# match the plugin's, and crosscheck/, which renders the page and the plugin's
+# offline harness from the same frames and compares them; wrangler would
+# otherwise upload them and serve them, which is neither useful nor anybody's
+# business.
+tools/

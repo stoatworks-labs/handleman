@@ -97,6 +97,7 @@ both turned by hand, eight frames a turn, about two turns a second. A hand is no
 | `source/Handleman.{h,cpp}` | The plugin: parameters, the clock, the cranks, the ring's bookkeeping, the frame table, the passes, the test hooks. |
 | `tools/hmtest/` | The harness: the coded picture, every check, the negative controls, bench, pipe, shader dump. |
 | `tools/sweep.py`, `tools/verify.sh`, `tools/spectral_weights.py` | No dead control; all of it; the stocks. |
+| `demo/` | The browser demo: the plugin's shaders (spliced in by `demo/tools/sync_shaders.py`, checked by `check_shaders.py`), a hand port of the CPU half, and `demo/tools/crosscheck/`. See "The browser demo". |
 
 ---
 
@@ -461,7 +462,74 @@ at 320x180 and 1280x720 and on the software renderer, or `hmtest` at 1280x720.
   end than the projector shows; the clip has no such rows, so it is the clip's edge row
   repeated, which shows as streaks either side of the frame line when Framing is off the
   middle (the guide's `wear.png` shows it).
-- **No OpenFX port, browser demo or presets.** The user guide exists since v0.1.0.
+- **No OpenFX port or presets.** The user guide exists since v0.1.0; the browser demo since
+  2026-10-28 (below).
+
+---
+
+## The browser demo
+
+`demo/` is the page at **handleman-demo.stoatworks-labs.com** (2026-10-28), on the fleet's kit
+(`stoatworks-backend/resolume-demo`, vendored into `demo/vendor/` from its origin/main).
+
+**What is the plugin's.** Every GLSL string of `Shaders.cpp` — the version line, the vertex body
+and the capture, resample and output bodies — is spliced into `demo/plugin.js` by
+`demo/tools/sync_shaders.py`, tabs and comments included, and assembled as `assemble` does. So the
+capture into the ring (an RGBA8 `TEXTURE_2D_ARRAY` in WebGL2 too, `texStorage3D` where the plugin
+calls `glTexImage3D`), the ring's copy through the resample pass, and the whole output pass run on
+the GPU as they do here. The same script copies Shaders.h's print-data layout, every Model.h
+constant and enum (a `float` through `Math.fround`, an expression such as `kPitch` or the
+partials' `1.0 / kFramesPerTurn` evaluated in double), Model.cpp's hash streams, Spectral.h's
+weights (as floats), the Controls option lists, and Handleman.cpp's `kMaxRing`, hash streams and
+the print seed. `demo/tools/check_shaders.py` holds all of it to the C++ character for character
+and `tools/verify.sh` runs it; the one-character mutation above fails it, and so does `kSlip`
+0.06 → 0.07.
+
+**What is a hand port:** Model.cpp whole — `Hash`, `Key` (uint32 through `Math.imul` and `>>> 0`,
+an int64 index split into its two's-complement halves), `Normal`, `Amplitude` and `Hand`,
+`ShutterOpen`, `CumulativeOpen`, `Segments`, `Weave`, `WeaveOffset`, `Scratches`, `Dust`,
+`HairAt`, `FogExposure`, `Reel` (`INT64_MAX` is `Infinity`; `ramp / 3` is truncated) and
+`ToneLaw` — Controls.cpp's laws, FilmRing's `Ensure`/`BindLayer`, every default from
+`Handleman::Handleman()`, and `ProcessOpenGL` from the clock to the last uniform. Change one of
+those here and change the page by hand.
+
+**Held to the plugin by a crosscheck, not by verify.** `demo/tools/crosscheck/crosscheck.mjs`
+drives the page in headless Chrome (CDP over `--remote-debugging-pipe`, so no port) one frame at
+a time from a fresh instance at n / 60, reads back the clip the page fed in and what it drew,
+pipes the same input through `hmtest --pipe --fps 60` with the same `--set` values and Run Out
+pressed by `--script` on the same frames, and compares every channel. It first holds the page's
+19 controls to `hmtest --list` (names, order, kinds, defaults, element counts). Measured
+2026-10-28 at 320x180, five scenarios: the defaults (120 frames); both hands at 1, 24 fps, 2
+blades at 180°, Panchromatic B&W, Contrast 0.8, every mark up, Framing 0.4, Vignette 1 (120); a
+0.25 s run-out at frame 10 on Off the End and a new roll at frame 200 (260, through blank cells,
+the whip and 88 frames of bare lamp); a Framed run-out on the bars in Amber Tint at Contrast 0.2
+with the projector's hand at 1 (240); and Colour at Mix 0.7 on the alpha clip at 8 fps, camera
+hand only, 1 blade at 126° (120). Through ANGLE on Metal (M4 Max) every channel of every frame
+is within 1/255: 1, 0, 8, 10 and 6,054 values differ, by 1. Through SwiftShader, up to 113,364
+of 27.6 million, by 1. It can fail: the page at Weave 0.36 against the plugin at 0.35 differs by
+up to 6/255, and Camera Hand 0.31 against 0.3 by up to 15/255 on 2.4 million values; both are
+run as negative controls every time. Not crosschecked: a resize mid-run (`--pipe` has one
+raster), and a real display's clock (the page is driven at exactly n / 60). The release of the
+Run Out toggle asks the kit for a frame; in the driven check that request coalesces with the
+driver's own, so no extra frame is rendered.
+
+**What differs, each said on the page:** the host's frame is the browser's
+requestAnimationFrame, so **the flicker beats against the viewer's display rate** (12 Hz at 60 Hz
+with the defaults, moved about by the projector's hand) and the line under the picture reports
+the rate, the beat, both hands' speeds, the loop and the reel; the camera exposes the page's
+clip as a host's picture, so a slow display shares pictures between frames sooner; the clock is
+the kit's (no unit vote; a paused page renders dt = 0 frames; Restart is a backward clock, which
+the clamp reads as 0 s); Run Out is a toggle the renderer releases on the frame it acts (the kit
+has no event type); no About block; `Perturb` and `Probe` are 0; the kit caps one frame at
+0.1 s. A photosensitivity note sits above the picture. Clips are the kit's generated ones
+(moving scene first), never Resolume's; the hands and the marks are the plugin's chosen
+numbers, and the page says so.
+
+Deploy: `cf-run npx wrangler deploy` from the repo root, or push to main
+(`.github/workflows/deploy.yml`). The host is a Worker **route** over a proxied `AAAA 100::`
+record made through the API on 2026-10-28, not a custom domain: the zone is at Cloudflare's
+limit of 100. Delete that record and the page goes dark while deploys stay green. Verify by
+content: `curl -s 'https://handleman-demo.stoatworks-labs.com/?cb=1' | grep -o '<title>[^<]*'`.
 
 ---
 

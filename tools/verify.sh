@@ -19,6 +19,11 @@
 #                 and glslc accept some (`packed`) that Mesa refuses.
 #   spectral      Source/Spectral.h is what tools/spectral_weights.py computes
 #                 from its tables: nobody edited the generated weights by hand.
+#   demo          the browser demo's copy of every shader, and of the constants
+#                 it hands them, is still the plugin's, character for character
+#                 (demo/tools/check_shaders.py). Says nothing about the page's
+#                 hand PORT of the CPU half; only a reader checks that, or
+#                 demo/tools/crosscheck when somebody runs it.
 #   physics       every harness check, at TWO rasters: 320x180, which is what
 #                 CI renders at, and 1280x720. Each measures its property out of
 #                 the plugin's own picture:
@@ -145,6 +150,28 @@ if out=$(python3 tools/spectral_weights.py --check 2>&1); then
 	pass "$out"
 else
 	fail "$out"
+fi
+
+#---------------------------------------------------------------------------
+# The browser demo's copy of every shader, and of the print-data layout, the
+# Model.h constants and enums, Spectral.h's weights, the Controls lists and
+# Handleman.cpp's constants it hands them, is the plugin's, character for
+# character. A drifted comment counts. A shader change here means
+# `python3 demo/tools/sync_shaders.py`, never a hand edit of demo/plugin.js.
+# It says nothing about the page's PORT of the CPU half; only a reader checks
+# that, or demo/tools/crosscheck/crosscheck.mjs when somebody runs it (it needs
+# Chrome and a local server, so it is not run here).
+#---------------------------------------------------------------------------
+step "demo shaders"
+if [ -f demo/tools/check_shaders.py ]; then
+	if out=$(python3 demo/tools/check_shaders.py 2>&1); then
+		pass "$( printf '%s\n' "$out" | tail -1 )"
+	else
+		fail "the demo's shaders or constants have drifted from source/ -- run: python3 demo/tools/sync_shaders.py"
+		printf '%s\n' "$out" | tail -12
+	fi
+else
+	printf '   skipped: no demo/\n'
 fi
 
 for size in 320x180 1280x720; do

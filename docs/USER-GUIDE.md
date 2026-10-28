@@ -607,7 +607,12 @@ whether the loop of film couldn't be allocated, and what unit the host's clock a
 - **A 16-bit composition** is quantised to 8 bits in the loop of film.
 - **Checked at 320 × 180 and 1280 × 720** in the harness, and on Apple's software renderer. Only
   timed at 4K.
-- **No presets, no OpenFX version and no browser demo.**
+- **No presets and no OpenFX version.**
+- **The browser demo is a port, not the plugin.** At
+  [handleman-demo.stoatworks-labs.com](https://handleman-demo.stoatworks-labs.com/) the shaders run
+  in WebGL2, and the two hands, the shutter's weights, the weave, the dirt and the run-out are
+  rewritten in JavaScript. Its flicker beats against your browser's display rate, not your output's.
+  The page lists what it doesn't reproduce.
 
 ---
 
@@ -620,6 +625,7 @@ the project page, this user guide, the source on GitHub and the support page in 
 
 - Project page: [stoatworks-labs.com/software/handleman](https://stoatworks-labs.com/software/handleman/)
 - Source: [github.com/stoatworks-labs/handleman](https://github.com/stoatworks-labs/handleman)
+- Browser demo: [handleman-demo.stoatworks-labs.com](https://handleman-demo.stoatworks-labs.com/)
 - User guide: [stoatworks-labs.com/software/handleman/guide](https://stoatworks-labs.com/software/handleman/guide/)
 
 ## Reporting something
