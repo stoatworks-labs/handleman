@@ -18,6 +18,8 @@ A hand-cranked camera and projector, for your clip. Sepia or black and white, a 
 that won't sit still, the usual wear and tear on the print, and a button that runs the reel
 out. An FFGL effect for [Resolume](https://resolume.com) Arena and Avenue.
 
+The [project page](https://stoatworks-labs.com/software/handleman/) has the downloads, the [user guide](https://stoatworks-labs.com/software/handleman/guide/) and the video.
+
 ![A heap of horned skulls in warm sepia, the shadows deep brown and the highlights cream, with a faint grain, a thin dark scratch down the frame and a hair curling in at the top](docs/hero.png)
 
 <sub>One frame, rendered by `hmtest --pipe`, the offline harness, not captured from
